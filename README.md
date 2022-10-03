@@ -1,2 +1,2 @@
 # Custom ISA
-Optimized general purpose ISA to run custom programs
+General purpose ISA implemented using SystemVerilog to run custom programs
