@@ -1,0 +1,7 @@
+For Windows
+1. Install Python 3.10.4 from https://www.python.org/downloads/release/python-3104/
+2. Navigate to the directory that contains "assembler.py"
+3. Create/copy the assembly file you want to convert and name it "assembly.txt", 
+   and ensure it is in the same directory as "assembler.py"
+4. From there, run "python3 assembler.py" on the terminal
+5. The corresponding machine code "machinecode.txt" will be generated
