@@ -1,0 +1,846 @@
+xor r0 r0	// r0 = r0 ^ r0 = 0 (count = 0), address 0x000
+
+LOOP:		// Assume label LOOP is at address 0x001
+xor r1 r1	// r1 = r1 ^ r1 = 0
+xor r2 r2	// r2 = r2 ^ r2 = 0
+xor r3 r3	// r3 = r3 ^ r3 = 0
+xor r4 r4	// r4 = r4 ^ r4 = 0
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r6 r6	// r6 = r6 ^ r6 = 0
+
+lut #0	// r7 = 1
+add r1 r7	// r1 = 1
+lut #9	// r7 = 30
+add r2 r7	// r2 = r2 + r7 = 0 + 30 = 30
+add r2 r0	// r2 = r2 + r0 = 30 + count = &mem[30 + count]
+lb r2 r2	// r2 = mem[30 + count] = LSW = msg_cor[7:0]
+
+add r3 r1	// r3 = r3 + r1 = 0 + 1 = 1
+lut #9	// r7 = 30
+add r3 r7	// r3 = r3 + r7 = 1 + 30 = 31
+add r3 r0	// r3 = r3 + r0 = 31 + count = &mem[31 + count]
+lb r3 r3	// r3 = mem[31 + count] = MSW = msg_cor[15:8]
+
+// Calculating s8
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 1 = MSW >> 1
+and r4 r1	// r4 = r4 & 1 = MSW[1]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = MSW[1]
+
+add r5 r1	// r5 = r5 + r1 = 1 + 1 = 2
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 2 = MSW >> 2
+and r4 r1	// r4 = r4 & 1 = MSW[2]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[2:1]
+
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = MSW >> 3
+and r4 r1	// r4 = r4 & 1 = MSW[3]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[3:1]
+
+add r5 r1	// r5 = r5 + r1 = 3 + 1 = 4
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 4 = MSW >> 4
+and r4 r1	// r4 = r4 & 1 = MSW[4]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[4:1]
+
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = MSW >> 5
+and r4 r1	// r4 = r4 & 1 = MSW[5]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[5:1]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = MSW >> 6
+and r4 r1	// r4 = r4 & 1 = MSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[6:1]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = MSW >> 7
+and r4 r1	// r4 = r4 & 1 = MSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[7:1] = s8
+
+// Storing s8 in mem[68]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #3	// r7 = 8
+add r4 r7	// r4 = r4 + r7 = 30 + 8 = 38
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 38 = 0x44 = &mem[68]
+sb r6 r4	// mem[68] = r6 = s8
+
+// Calculating s4
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r6 r6 	// r6 = r6 ^ r6 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+add r5 r5	// r5 = r5 + r5 = 1 + 1 = 2
+add r5 r5	// r5 = r5 + r5 = 2 + 2 = 4
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = LSW >> 5
+and r4 r1	// r4 = r4 & 1 = LSW[5]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = LSW[5]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = LSW >> 6
+and r4 r1	// r4 = r4 & 1 = LSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[6:5]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = LSW >> 7
+and r4 r1	// r4 = r4 & 1 = LSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[7:5]
+
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+add r5 r5	// r5 = r5 + r5 = 1 + 1 = 2
+add r5 r5	// r5 = r5 + r5 = 2 + 2 = 4
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 4 = MSW >> 4
+and r4 r1	// r4 = r4 & 1 = MSW[4]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[4] ^ ^LSW[7:5]
+
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = MSW >> 5
+and r4 r1	// r4 = r4 & 1 = MSW[5]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[5:4] ^ ^LSW[7:5]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = MSW >> 6
+and r4 r1	// r4 = r4 & 1 = MSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[6:4] ^ ^LSW[7:5]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = MSW >> 7
+and r4 r1	// r4 = r4 & 1 = MSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[7:4] ^ ^LSW[7:5] = s4
+
+// Storing s4 in mem[64]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #2	// r7 = 4
+add r4 r7	// r4 = r4 + r7 = 30 + 4 = 34
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 34 = 0x40 = &mem[64]
+sb r6 r4	// mem[64] = r6 = s4
+
+// Calculating s2
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r6 r6 	// r6 = r6 ^ r6 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+add r5 r1	// r5 = r5 + r1 = 1 + 1 = 2
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = LSW >> 3
+and r4 r1	// r4 = r4 & 1 = LSW[3]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = LSW[3]
+
+add r5 r5	// r5 = r5 + r5 = 3 + 3 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = LSW >> 6
+and r4 r1	// r4 = r4 & 1 = LSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = LSW[6] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = LSW >> 7
+and r4 r1	// r4 = r4 & 1 = LSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[7:6] ^ LSW[3]
+
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+add r5 r5	// r5 = r5 + r5 = 1 + 1 = 2
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 2 = MSW >> 2
+and r4 r1	// r4 = r4 & 1 = MSW[2]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[2] ^ ^LSW[7:6] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = MSW >> 3
+and r4 r1	// r4 = r4 & 1 = MSW[3]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[3:2] ^ ^LSW[7:6] ^ LSW[3]
+
+add r5 r5	// r5 = r5 + r5 = 3 + 3 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = MSW >> 6
+and r4 r1	// r4 = r4 & 1 = MSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[6] ^ ^MSW[3:2] ^ ^LSW[7:6] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = MSW >> 7
+and r4 r1	// r4 = r4 & 1 = MSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[7:6] ^ ^MSW[3:2] ^ ^LSW[7:6] ^ LSW[3] = s2
+
+// Storing s2 in mem[62]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #1	// r7 = 2
+add r4 r7	// r4 = r4 + r7 = 30 + 2 = 32
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 32 = 0x3E = &mem[62]
+sb r6 r4	// mem[62] = r6 = s2
+
+// Calculating s1
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r6 r6	// r6 = r6 ^ r6 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+add r5 r5	// r5 = r5 + r5 = 1 + 1 = 2
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = LSW >> 3
+and r4 r1	// r4 = r4 & 1 = LSW[3]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 3 + 1 = 4
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = LSW >> 5
+and r4 r1	// r4 = r4 & 1 = LSW[5]
+xor r6 r4	// r6 = r6 ^ r4 = LSW[5] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = LSW >> 7
+and r4 r1	// r4 = r4 & 1 = LSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = LSW[7] ^ LSW[5] ^ LSW[3]
+
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 1 = MSW >> 1
+and r4 r1	// r4 = r4 & 1 = MSW[1]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[1] ^ LSW[7] ^ LSW[5] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 1 + 1 = 2
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = MSW >> 3
+and r4 r1	// r4 = r4 & 1 = MSW[3]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[3]^ MSW[1] ^ LSW[7] ^ LSW[5] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 3 + 1 = 4
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = MSW >> 5
+and r4 r1	// r4 = r4 & 1 = MSW[5]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[5] ^ MSW[3]^ MSW[1] ^ LSW[7] ^ LSW[5] ^ LSW[3]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = MSW >> 7
+and r4 r1	// r4 = r4 & 1 = MSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = MSW[7] ^ MSW[5] ^ MSW[3]^ MSW[1] ^ LSW[7] ^ LSW[5] ^ LSW[3] = s1
+
+// Storing s1 in mem[61]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+add r4 r1	// r4 = r4 + r1 = 30 + 1 = 31
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 31 = 0x3D = &mem[61]
+sb r6 r4	// mem[61] = r6 = s1
+
+// Calculating s0
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r6 r6	// r6 = r6 ^ r6 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 1 = LSW >> 1
+and r4 r1	// r4 = r4 & 1 = LSW[1]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = LSW[1]
+
+add r5 r1	// r5 = r5 + r1 = 1 + 1 = 2
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 2 = LSW >> 2
+and r4 r1	// r4 = r4 & 1 = LSW[2]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[2:1]
+
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = LSW >> 3
+and r4 r1	// r4 = r4 & 1 = LSW[3]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[3:1]
+
+add r5 r1	// r5 = r5 + r1 = 3 + 1 = 4
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 4 = LSW >> 4
+and r4 r1	// r4 = r4 & 1 = LSW[4]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[4:1]
+
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = LSW >> 5
+and r4 r1	// r4 = r4 & 1 = LSW[5]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[5:1]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = LSW >> 6
+and r4 r1	// r4 = r4 & 1 = LSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[6:1]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = LSW >> 7
+and r4 r1	// r4 = r4 & 1 = LSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^LSW[7:1]
+
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+and r4 r1	// r4 = r4 & 1 = MSW[0]
+xor r6 r4	// r6 = r6 ^ r4 = 0 + r4 = r4 = MSW[0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 1 = MSW >> 1
+and r4 r1	// r4 = r4 & 1 = MSW[1]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[1:0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 1 + 1 = 2
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 2 = MSW >> 2
+and r4 r1	// r4 = r4 & 1 = MSW[2]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[2:0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 2 + 1 = 3
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 3 = MSW >> 3
+and r4 r1	// r4 = r4 & 1 = MSW[3]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[3:0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 3 + 1 = 4
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 4 = MSW >> 4
+and r4 r1	// r4 = r4 & 1 = MSW[4]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[4:0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 4 + 1 = 5
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 5 = MSW >> 5
+and r4 r1	// r4 = r4 & 1 = MSW[5]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[5:0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 5 + 1 = 6
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 6 = MSW >> 6
+and r4 r1	// r4 = r4 & 1 = MSW[6]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[6:0] ^ ^LSW[7:1]
+
+add r5 r1	// r5 = r5 + r1 = 6 + 1 = 7
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 7 = MSW >> 7
+and r4 r1	// r4 = r4 & 1 = MSW[7]
+xor r6 r4	// r6 = r6 ^ r4 = ^MSW[7:0] ^ ^LSW[7:1] = s0
+
+// Storing s0 in mem[60]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 30 = 0x3C = &mem[60]
+sb r6 r4	// mem[60] = r6 = s0
+
+// Constructing par_p
+xor r5 r5	// r5 = r5 ^ r5 = 0
+xor r6 r6	// r6 = r6 ^ r6 = 0
+add r5 r1	// r5 = r5 + r1 = 0 + 1 = 1
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 1 = LSW >> 1
+and r4 r1	// r4 = r4 & 1 = LSW[1]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = { LSW[1] }
+
+add r5 r1	// r5 = r5 + r1 = 1 + 1 = 2
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 2 = LSW >> 2
+and r4 r1	// r4 = r4 & 1 = LSW[2]
+add r4 r4	// r4 = r4 + r4 = 2 * LSW[2]
+add r6 r4	// r6 = r6 + r4 = { LSW[2], LSW[1] }
+
+add r5 r5	// r5 = r5 + r5 = 2 + 2 = 4
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW
+srl r4 r5	// r4 = r4 >> r5 = r4 >> 4 = LSW >> 4
+and r4 r1	// r4 = r4 & 1 = LSW[4]
+add r4 r4	// r4 = r4 + r4 = 2 * LSW[4]
+add r4 r4	// r4 = r4 + r4 = 4 * LSW[4]
+add r6 r4	// r6 = r6 + r4 = { LSW[4], LSW[2], LSW[1] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3	// r4 = r4 + r3 = 0 + r3 = r3 = MSW
+and r4 r1	// r4 = r4 & 1 = MSW[0]
+add r4 r4	// r4 = r4 + r4 = 2 * MSW[0]
+add r4 r4	// r4 = r4 + r4 = 4 * MSW[0]
+add r4 r4	// r4 = r4 + r4 = 8 * MSW[0]
+add r6 r4	// r6 = r6 + r4 = { MSW[0], LSW[4], LSW[2], LSW[1] } = par_p
+
+// Storing par_p in mem[63]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r1	// r4 = r4 + r1 = 0 + 1 = 1
+add r4 r1	// r4 = r4 + r1 = 1 + 1 = 2
+add r4 r1	// r4 = r4 + r1 = 2 + 1 = 3
+add r4 r7	// r4 = r4 + r7 = 3 + 30 = 33
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 33 = 0x3F = &mem[63]
+sb r6 r4	// mem[63] = r6 = par_p
+
+// Constructing par_s
+xor r6 r6	// r6 = r6 ^ r6 = 0
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+add r4 r1	// r4 = r4 + r1 = 30 + 1 = 31
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 31 = 0x3D = &mem[61]
+lb r5 r4	// r5 = mem[61] = s1
+add r6 r5	// r6 = r6 + r5 = { s1 }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #1	// r7 = 2
+add r4 r7	// r4 = r4 + r7 = 30 + 2 = 32
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 32 = 0x3E = &mem[62]
+lb r5 r4	// r5 = mem[62] = s2
+add r5 r5	// r5 = r5 + r5 = 2 * s2
+add r6 r5	// r6 = r6 + r5 = { s2, s1 }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #2	// r7 = 4
+add r4 r7	// r4 = r4 + r7 = 30 + 4 = 34
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 34 = 0x40 = &mem[64]
+lb r5 r4	// r5 = mem[64] = s4
+add r5 r5	// r5 = r5 + r5 = 2 * s4
+add r5 r5	// r5 = r5 + r5 = 4 * s4
+add r6 r5	// r6 = r6 + r5 = { s4, s2, s1 }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #3	// r7 = 8
+add r4 r7	// r4 = r4 + r7 = 30 + 8 = 38
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 38 = 0x44 = &mem[68]
+lb r5 r4	// r5 = mem[68] = s8
+add r5 r5	// r5 = r5 + r5 = 2 * s8
+add r5 r5	// r5 = r5 + r5 = 4 * s8
+add r5 r5	// r5 = r5 + r5 = 8 * s8
+add r6 r5	// r6 = r6 + r5 = { s8, s4, s2, s1 } = par_s
+
+// Calculating par_mis
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r1	// r4 = r4 + r1 = 0 + 1 = 1
+add r4 r1	// r4 = r4 + r1 = 1 + 1 = 2
+add r4 r1	// r4 = r4 + r1 = 2 + 1 = 3
+add r4 r7	// r4 = r4 + r7 = 3 + 30 = 33
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 33 = 0x3F = &mem[63]
+lb r5 r4	// r5 = mem[63] = par_p
+
+xor r6 r5	// r6 = r6 ^ r5 = par_s ^ par_p = par_mis
+
+// Calculating shift (shift_high, shift_low)
+xor r2 r2	// r2 = r2 ^ r2 = 0 = shift_count
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r1	// r6 = r5 + r1 = 0 + 1 = 1
+
+xor r3 r3	// r3 = r3 ^ r3 = 0
+add r3 r6	// r3 = r3 + r6 = 0 + r6 = r6 = par_mis
+srl r3 r1	// r3 = r3 >> 1 = par_mis >> 1
+srl r3 r1	// r3 = r3 >> 2 = par_mis >> 2
+srl r3 r1	// r3 = r3 >> 3 = par_mis >> 3
+and r3 r1	// r3 = r3 & 1 = par_mis[3]
+lut #1	// r7 = 2
+beq r3 r7	// If par_mis[3] == 1, jump to LUT[2] (SHIFT_HIGH)
+
+SHIFT_LOW:		// Assume label SHIFT_LOW is at address 0x1B7
+xor r3 r3	// r3 = r3 ^ r3 = 0
+add r3 r2	// r3 = r3 + r2 = 0 + r2 = r2 = shift_count
+xor r3 r6	// r3 = r3 ^ r6 = shift_count ^ par_mis
+add r5 r5	// r5 = r5 + r5 = 2 * r5 = r5 << 1 = 1 << 1
+add r2 r1	// r2 = r2 + r1 = r2 + 1 = shift_count + 1 = shift_count++
+beq r3 r1	// if shift_count ^ par_mis != 0, jump to LUT[1] (SHIFT_LOW)
+lut #1	// r7 = 2
+add r7 r1	// r7 = r7 + r1 = 2 + 1 = 3
+beq r1 r7	// Jump to LUT[3] (SHIFT_LOW_DONE)
+
+SHIFT_HIGH:	// Assume label SHIFT_HIGH is at address 0x1C0
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #10	// r7 = LUTI[10] = 7
+add r4 r6	// r4 = r4 + r6 = 0 + r6 = par_mis
+and r4 r7	// r4 = r4 & r7 = r4 & 0111 = { 0, par_mis[2:0] }
+xor r3 r3	// r3 = r3 ^ r3 = 0
+add r3 r2	// r3 = r3 + r2 = 0 + r2 = r2 = shift_count
+xor r3 r4	// r3 = r3 ^ r6 = shift_count ^ { 0, par_mis[2:0] }
+add r5 r5	// r5 = r5 + r5 = 2 * r5 = r5 << 1 = 1 << 1
+add r2 r1	// r2 = r2 + r1 = r2 + 1 = shift_count + 1 = shift_count++
+lut #1	// r7 = 2
+beq r3 r7	// if (shift_count ^ {0, par_mis[2:0]}) != 0, jump to LUT[2] (SHIFT_HIGH)
+lut #2	// r7 = 4
+beq r1 r7	// Jump to LUT[4] (SHIFT_HIGH_DONE)
+
+SHIFT_LOW_DONE:	// Assume label SHIFT_LOW_DONE is at address 0x1CD
+srl r5 r1	// r5 = r5 >> r1 = r5 >> 1
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r5	// r4 = r4 + r5 = 0 + r5 = r5
+xor r5 r5	// r5 = r5 ^ r5 = 0
+lut #2	// r7 = 4
+add r7 r1	// r7 = r7 + r1 = 4 + 1 = 5
+beq r1 r7	// Jump to LUT[5] (SHIFT_DONE)
+
+SHIFT_HIGH_DONE:// Assume label SHIFT_HIGH_DONE is at address 0x1D4
+xor r4 r4	// r4 = r4 ^ r4 = 0
+srl r5 r1	// r5 = r5 >> r1 = r5 >> 1
+
+SHIFT_DONE:	// Assume label SHIFT_DONE is at address 0x1D6
+
+xor r3 r3	// r3 = r3 ^ r3 = 0
+add r3 r1	// r3 = r3 + r1 = 0 + 1 = 1
+lut #9	// r7 = 30
+add r3 r7	// r3 = r3 + r7 = 1 + 30 = 31
+add r3 r0	// r3 = r3 + r0 = 31 + count = &mem[31 + count]
+lb r3 r3	// r3 = mem[31 + count] = MSW = msg_cor[15:8]
+
+xor r2 r2	// r2 = r2 ^ r2 = 0
+lut #9	// r7 = 30
+add r2 r7	// r2 = r2 + r7 = 0 + 30 = 30
+add r2 r0	// r2 = r2 + r0 = 30 + count = &mem[30 + count]
+lb r2 r2	// r2 = mem[30 + count] = LSW = msg_cor[7:0]
+
+// Construct msg_sft (MSW_sft, LSW_sft)
+xor r3 r5	// r3 = r3 ^ r5 = MSW ^ shift_high = MSW_sft
+
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r2	// r5 = r5 + r2 = 0 + r2 = r2 = LSW
+and r5 r1	// r5 = r5 & 1 = LSW[0] = msg_cor[0]
+xor r2 r4	// r2 = r2 ^ r4 = LSW ^ shift_low = LSW_sft
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+lut #9	// r7 = 30
+add r4 r7	// r4 = r4 + r7 = 0 + 30 = 30
+lut #9	// r7 = 0x1E = &mem[30]
+add r4 r7	// r4 = r4 + r7 = 0x1E + 30 = 0x3C = &mem[60]
+lb r4 r4	// r4 = mem[60] = s0
+
+// r2 = MSW_sft
+// r3 = LSW_sft
+// r4 = s0
+// r5 = msg_cor[0]
+// r6 = par_mis
+
+// Construct flag
+xor r4 r5	// r4 = r4 ^ r5 = s0 ^ msg_cor[0]
+lut #10	// r7 = 7
+beq r4 r7	// if s0 ^ msg_cor[0] != 0, jump to LUT[7] (FLAG_ELSE)
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+xor r4 r6	// r4 = r4 ^ r6 = 0 ^ par_mis
+lut #2	// r7 = 4
+add r7 r1	// r7 = r7 + r1 = 4 + 1 = 5
+add r7 r1	// r7 = r7 + r1 = 5 + 1 = 6
+beq r4 r7 	// if 0 ^ par_mis != 0, jump to LUT[6] (FLAG_IF_ELSE)
+ 
+xor r5 r5	// r5 = r5 ^ r5 = 0 = flag (0b00000)
+lut #3	// r7 = 8
+beq r1 r7	// Jump to LUT[8] (FLAG_DONE)	
+
+FLAG_IF_ELSE:	// Assume label FLAG_IF_ELSE is at address 0x1F8
+lut #4	// r7 = 16 = 0b10000
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r7	// r5 = r5 + r7 = 0 + r7 = flag (0b10000)
+lut #3	// r7 = 8
+beq r1 r7	// Jump to LUT[8] (FLAG_DONE)
+
+FLAG_ELSE:		// Assume label FLAG_ELSE is at address 0x1FD
+lut #3	// r7 = 8 = 0b01000
+xor r5 r5	// r5 = r5 ^ r5 = 0
+add r5 r7	// r6 = r5 + r7 = 0 + r7 = flag (0b01000)
+
+FLAG_DONE:		// Assume label FLAG_DONE is at address 0x200
+
+// Constructing LSW_rec
+xor r6 r6	// r6 = r6 ^ r6 = 0
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 3
+and r4 r1	// r4 = r4 & 1 = LSW_sft[3]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = { msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 4
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 5
+and r4 r1	// r4 = r4 & 1 = LSW_sft[5] = msg_sft[5]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[5]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[5], msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 4
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 5
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 6
+and r4 r1	// r4 = r4 & 1 = LSW_sft[6] = msg_sft[6]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[6]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[6]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[6:5], msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r2	// r4 = r4 + r2 = 0 + r2 = r2 = LSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 4
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 5
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 6
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = LSW_sft >> 7
+and r4 r1	// r4 = r4 & 1 = LSW_sft[7] = msg_sft[7]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[7]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[7]
+add r4 r4	// r4 = r4 + r4 = 8 * msg_sft[7]
+add r6 r4	// r6 = r6 + r4 = r4 = { msg_sft[7:5], msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+and r4 r1	// r4 = r4 & 1 = MSW_sft[1] = msg_sft[9]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[9]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[9]
+add r4 r4	// r4 = r4 + r4 = 8 * msg_sft[9]
+add r4 r4	// r4 = r4 + r4 = 16 * msg_sft[9]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[9], msg_sft[7:5], msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 2
+and r4 r1	// r4 = r4 & 1 = MSW_sft[2] = msg_sft[10]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[10]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[10]
+add r4 r4	// r4 = r4 + r4 = 8 * msg_sft[10]
+add r4 r4	// r4 = r4 + r4 = 16 * msg_sft[10]
+add r4 r4	// r4 = r4 + r4 = 32 * msg_sft[10]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[10:9], msg_sft[7:5], msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 3
+and r4 r1	// r4 = r4 & 1 = MSW_sft[3] = msg_sft[11]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[11]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[11]
+add r4 r4	// r4 = r4 + r4 = 8 * msg_sft[11]
+add r4 r4	// r4 = r4 + r4 = 16 * msg_sft[11]
+add r4 r4	// r4 = r4 + r4 = 32 * msg_sft[11]
+add r4 r4	// r4 = r4 + r4 = 64 * msg_sft[11]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[11:9], msg_sft[7:5], msg_sft[3] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 4
+and r4 r1	// r4 = r4 & 1 = MSW_sft[4] = msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 8 * msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 16 * msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 32 * msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 64 * msg_sft[12]
+add r4 r4	// r4 = r4 + r4 = 128 * msg_sft[12]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[12:9], msg_sft[7:5], msg_sft[3] }
+
+// Storing LSW_rec into mem[0 + count]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r0	// r4 = r4 + r0 = count
+sb r6 r4	// mem[0 + count] = LSW_rec
+
+// Constructing MSW_rec
+xor r6 r6	// r6 = r6 ^ r6 = 0
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 4
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 5
+and r4 r1	// r4 = r4 & 1 = MSW_sft[5] = msg_sft[13]
+add r6 r4	// r6 = r6 + r4 = 0 + r4 = r4 = { msg_sft[13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 4
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 5
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 6
+and r4 r1	// r4 = r4 & 1 = MSW_sft[6] = msg_sft[14]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[14]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[14:13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r3  // r4 = r4 + r3 = 0 + r3 = r3 = MSW_sft
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 4
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 5
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 6
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = MSW_sft >> 7
+and r4 r1	// r4 = r4 & 1 = MSW_sft[7] = msg_sft[15]
+add r4 r4	// r4 = r4 + r4 = 2 * msg_sft[15]
+add r4 r4	// r4 = r4 + r4 = 4 * msg_sft[15]
+add r6 r4	// r6 = r6 + r4 = { msg_sft[15:13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r5 // r4 = r4 + r5 = 0 + r5 = r5 = flag
+and r4 r1	// r4 = r4 & 1 = flag[0]
+add r4 r4	// r4 = r4 + r4 = 2 * flag[0]
+add r4 r4	// r4 = r4 + r4 = 4 * flag[0]
+add r4 r4	// r4 = r4 + r4 = 8 * flag[0]
+add r6 r4	// r6 = r6 + r4 = { flag[0], msg_sft[15:13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r5 // r4 = r4 + r5 = 0 + r5 = r5 = flag
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 1
+and r4 r1	// r4 = r4 & 1 = flag[1]
+add r4 r4	// r4 = r4 + r4 = 2 * flag[1]
+add r4 r4	// r4 = r4 + r4 = 4 * flag[1]
+add r4 r4	// r4 = r4 + r4 = 8 * flag[1]
+add r4 r4	// r4 = r4 + r4 = 16 * flag[1]
+add r6 r4	// r6 = r6 + r4 = { flag[1:0], msg_sft[15:13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r5 // r4 = r4 + r5 = 0 + r5 = r5 = flag
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 2
+and r4 r1	// r4 = r4 & 1 = flag[2]
+add r4 r4	// r4 = r4 + r4 = 2 * flag[2]
+add r4 r4	// r4 = r4 + r4 = 4 * flag[2]
+add r4 r4	// r4 = r4 + r4 = 8 * flag[2]
+add r4 r4	// r4 = r4 + r4 = 16 * flag[2]
+add r4 r4	// r4 = r4 + r4 = 32 * flag[2]
+add r6 r4	// r6 = r6 + r4 = { flag[2:0], msg_sft[15:13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r5 // r4 = r4 + r5 = 0 + r5 = r5 = flag
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 3
+and r4 r1	// r4 = r4 & 1 = flag[3]
+add r4 r4	// r4 = r4 + r4 = 2 * flag[3]
+add r4 r4	// r4 = r4 + r4 = 4 * flag[3]
+add r4 r4	// r4 = r4 + r4 = 8 * flag[3]
+add r4 r4	// r4 = r4 + r4 = 16 * flag[3]
+add r4 r4	// r4 = r4 + r4 = 32 * flag[3]
+add r4 r4	// r4 = r4 + r4 = 64 * flag[3]
+add r6 r4	// r6 = r6 + r4 = { flag[3:0] msg_sft[15:13] }
+
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r5 // r4 = r4 + r5 = 0 + r5 = r5 = flag
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 1
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 2
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 3
+srl r4 r1	// r4 = r4 >> r1 = r4 >> 1 = flag >> 4
+and r4 r1	// r4 = r4 & 1 = flag[4]
+add r4 r4	// r4 = r4 + r4 = 2 * flag[4]
+add r4 r4	// r4 = r4 + r4 = 4 * flag[4]
+add r4 r4	// r4 = r4 + r4 = 8 * flag[4]
+add r4 r4	// r4 = r4 + r4 = 16 * flag[4]
+add r4 r4	// r4 = r4 + r4 = 32 * flag[4]
+add r4 r4	// r4 = r4 + r4 = 64 * flag[4]
+add r4 r4	// r4 = r4 + r4 = 128 * flag[4]
+add r6 r4	// r6 = r6 + r4 = { flag[4:0], msg_sft[15:13] } = MSW_rec
+
+// Storing MSW_rec into mem[1 + count]
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r0	// r4 = r4 + r0 = count
+add r4 r1	// r4 = r4 + r1 = count + 1
+sb r6 r4	// mem[1 + count] = MSW_rec
+
+add r0 r1	// r0 = r0 + r1 = count + 1
+add r0 r1	// r0 = r0 + r1 = count + 1 + 1 = count + 2
+lut #9	// r7 = 30
+xor r4 r4	// r4 = r4 ^ r4 = 0
+add r4 r0	// r4 = r4 + r0 = 0 + count = count
+xor r4 r7	// r4 = r4 ^ r7 = count ^ 30
+lut #8	// r7 = 0
+beq r4 r7	// If count ^ 30 != 0, jump to label LUT[0] (LOOP)
+
+DONE:		// Label DONE
+lut #63	// Ack
