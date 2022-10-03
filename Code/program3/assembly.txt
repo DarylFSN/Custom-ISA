@@ -1,0 +1,428 @@
+lut #0 	// assume LUTI[0] stores 1
+xor r1 r1
+xor r2 r2
+xor r3 r3
+xor r4 r4
+xor r5 r5
+add r1 r7 // r1 = 1
+add r2 r1 // r2 = 1
+add r2 r2 // r2 = 2
+add r3 r2 // r3 = 2
+add r3 r3 // r3 = 4
+add r4 r3 // r4 = 4
+add r4 r4 // r4 = 8
+add r5 r4 // r5 = 8
+add r5 r5 // r5 = 16
+add r5 r4 // r5 = 24
+add r5 r3 // r5 = 28
+add r5 r2 // r5 = 30
+add r5 r1 // r5 = 31
+add r2 r1 // r2 = 3
+add r1 r5 // r1 = 32
+lb r1 r1 	// r1 = mem[32]
+srl r1 r2 // r1 = mem[32], [7:3] (r1 = pattern)
+xor r0 r0
+xor r2 r2 // r2 = count
+LOOP1
+//inner for loop for part 1
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+and r6 r5
+xor r6 r1
+//DO NOT CHANGE: r1, r6, r5
+xor r7 r7
+beq r6 r7 //(assume LUT[0] stores the mem address for the SKIP label)
+lut #0
+add r2 r7
+SKIP
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+lut #0
+srl r6 r7
+and r6 r5
+xor r6 r1
+lut #0
+beq r6 r7  //(assume LUT[1] stores the mem address for the SKIP2 label)
+lut #0
+add r2 r7
+SKIP2
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+lut #0
+srl r6 r7
+srl r6 r7
+and r6 r5
+xor r6 r1
+lut #1     //(assume LUTI[1] stores 2)
+beq r6 r7  //(assume LUT[2] stores the mem address for the SKIP3 label)
+lut #0
+add r2 r7
+SKIP3
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+lut #0
+srl r6 r7
+srl r6 r7
+srl r6 r7
+and r6 r5
+xor r6 r1
+lut #0
+xor r3 r3
+add r3 r7
+lut #1
+add r3 r7
+beq r6 r3  //(assume LUT[3] stores the mem address for the SKIP4 label)
+lut #0
+add r2 r7
+SKIP4
+lut #0
+add r0 r7
+xor r4 r4
+add r4 r7
+add r4 r5
+xor r4 r0
+lut #2     //(assume LUTI[2] stores 4)
+beq r4 r7  //(assume LUT[4] stores the mem address for the LOOP1 label)
+xor r0 r0
+add r0 r5
+lut #0
+add r0 r7
+add r0 r7
+sb r2 r0
+xor r0 r0
+xor r2 r2 // r2 = count
+LOOP2
+//inner for loop for part 2
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+and r6 r5
+xor r6 r1
+//DO NOT CHANGE: r1, r6, r5
+xor r3 r3
+lut #0
+add r3 r7
+lut #2
+add r3 r7
+beq r6 r3 //(assume LUT[5] stores the mem address for the SKIP5 label)
+lut #0
+add r2 r7
+lut #3    //(assume LUTI[3] stores 8)
+beq r2 r7 //(assume LUT[8] stores the mem address for the SKIP8 label)
+SKIP5
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+lut #0
+srl r6 r7
+and r6 r5
+xor r6 r1
+add r3 r7
+beq r6 r3 //(assume LUT[6] stores the mem address for the SKIP6 label)
+lut #0
+add r2 r7
+lut #3
+beq r2 r7
+SKIP6
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+lut #0
+srl r6 r7
+srl r6 r7
+and r6 r5
+xor r6 r1
+add r3 r7
+beq r6 r3 //(assume LUT[7] stores the mem address for the SKIP7 label)
+lut #0
+add r2 r7
+lut #3
+beq r2 r7
+SKIP7
+xor r6 r6
+add r6 r0
+lb r6 r6 // r6 = mem[0]
+lut #0
+srl r6 r7
+srl r6 r7
+srl r6 r7
+and r6 r5
+xor r6 r1
+add r3 r7
+beq r6 r3
+lut #0
+add r2 r7
+SKIP8
+lut #0
+add r0 r7
+xor r4 r4
+add r4 r7
+add r4 r5
+xor r4 r0
+xor r3 r3
+lut #3
+add r3 r7
+lut #0
+add r3 r7
+beq r4 r3 //(assume LUT[9] stores the mem address for the LOOP2 label)
+xor r0 r0
+add r0 r5
+lut #0
+add r0 r7
+add r0 r7
+add r0 r7
+sb r2 r0
+xor r0 r0
+xor r2 r2 // r2 = count
+//part 3
+add r1 r1
+add r1 r1
+add r1 r1
+add r5 r5
+add r5 r5
+add r5 r5
+LOOP3
+xor r6 r6
+add r6 r0
+lb r6 r6
+and r6 r5
+xor r6 r1
+xor r3 r3
+lut #3
+add r3 r7
+lut #1
+add r3 r7
+beq r6 r3 //(assume LUT[10] stores the mem address for the SKIP9 label)
+lut #0
+add r2 r7
+SKIP9
+xor r6 r6
+add r6 r0
+lb r6 r6
+add r6 r6
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7  
+beq r6 r3  //(assume LUT[11] stores the mem address for the SKIP10 label)
+lut #0
+add r2 r7
+SKIP10
+xor r6 r6
+add r6 r0
+lb r6 r6
+add r6 r6
+add r6 r6
+and r6 r5
+xor r6 r1
+lut #0
+add r3 r7
+beq r6 r3  //(assume LUT[12] stores the mem address for the SKIP11 label)
+lut #0
+add r2 r7
+SKIP11
+xor r6 r6
+add r6 r0
+lb r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7
+beq r6 r3 //(assume LUT[13] stores the mem address for the SKIP12 label)
+lut #0
+add r2 r7
+SKIP12
+xor r6 r6
+add r6 r0
+xor r4 r4
+add r4 r6
+lb r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+lut #0
+add r4 r7
+lb r4 r4
+srl r4 r7
+srl r4 r7
+srl r4 r7
+srl r4 r7
+add r6 r4
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7
+beq r6 r3 //(assume LUT[14] stores the mem address for the SKIP13 label)
+lut #0
+add r2 r7
+SKIP13
+xor r6 r6
+add r6 r0
+xor r4 r4
+add r4 r6
+lb r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+lut #0
+add r4 r7
+lb r4 r4
+srl r4 r7
+srl r4 r7
+srl r4 r7
+srl r4 r7
+add r4 r4
+add r6 r4
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7
+beq r6 r3 //(assume LUT[15] stores the mem address for the SKIP14 label)
+lut #0
+add r2 r7
+SKIP14
+xor r6 r6
+add r6 r0
+xor r4 r4
+add r4 r6
+lb r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+lut #0
+add r4 r7
+lb r4 r4
+srl r4 r7
+srl r4 r7
+srl r4 r7
+srl r4 r7
+add r4 r4
+add r4 r4
+add r6 r4
+and r6 r5
+xor r6 r1
+lut #0
+add r3 r7
+beq r6 r3 (assume LUT[16] stores the mem address for the SKIP15 label)
+lut #0
+add r2 r7
+SKIP15
+xor r6 r6
+add r6 r0
+xor r4 r4
+add r4 r6
+lb r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+lut #0
+add r4 r7
+lb r4 r4
+srl r4 r7
+srl r4 r7
+srl r4 r7
+srl r4 r7
+add r4 r4
+add r4 r4
+add r4 r4
+add r6 r4
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7
+beq r6 r3 (assume LUT[17] stores the mem address for the SKIP16 label)
+lut #0
+add r2 r7
+SKIP16
+lut #0
+add r0 r7
+xor r4 r4
+lut #9
+add r4 r7
+lut #0
+add r4 r7
+xor r4 r0
+add r3 r7
+beq r4 r3  //(assume LUT[18] stores the mem address for the LOOP3 label)
+xor r6 r6
+add r6 r0
+lb r6 r6
+and r6 r5
+xor r6 r1
+xor r3 r3
+lut #4
+add r3 r7
+lut #1
+add r3 r7
+lut #0
+add r3 r7
+beq r6 r3 //(assume LUT[19] stores the mem address for the SKIP17 label)
+lut #0
+add r2 r7
+SKIP17
+xor r6 r6
+add r6 r0
+lb r6 r6
+add r6 r6
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7  
+beq r6 r3  //(assume LUT[20] stores the mem address for the SKIP18 label)
+lut #0
+add r2 r7
+SKIP18
+xor r6 r6
+add r6 r0
+lb r6 r6
+add r6 r6
+add r6 r6
+and r6 r5
+xor r6 r1
+lut #0
+add r3 r7
+beq r6 r3  //(assume LUT[21] stores the mem address for the SKIP19 label)
+lut #0
+add r2 r7
+SKIP19
+xor r6 r6
+add r6 r0
+lb r6 r6
+add r6 r6
+add r6 r6
+add r6 r6
+and r6 r5
+xor r6 r1
+lut #0 
+add r3 r7
+beq r6 r3 //(assume LUT[22] stores the mem address for the SKIP20 label)
+lut #0
+add r2 r7
+SKIP20
+xor r0 r0
+lut #5
+add r0 r7
+lut #1
+add r0 r7
+lut #0
+add r0 r7
+sb r2 r0
+DONE:		// Label DONE
+lut #63	// Ack
